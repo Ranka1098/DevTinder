@@ -1,0 +1,36 @@
+------------creating our express server-------------------------
+1.vs code setup
+2.git repository ready
+3.npm init 
+4.create src folder
+5.create app.js entry file in src folder
+6.install web server on machine
+  npm i express
+7.create a web server
+    1.require express module
+    2.creating new web server using express
+    const app = express();
+    3.app listen incoming request on port number  7777 is port number
+    app.listen(7777,()=>{
+        console.log("express server is started")
+    })
+    4.request handle 
+    app.use((req,res)=>{
+        app.send("this is express server")
+    })
+    5.different requesthandle by route
+    app.use("/hello",(req,res)=>{
+        app.send("this is test server")
+    })
+
+//note ->  1.always create route on top
+           2.all middleware should in last
+           3.keep last place  app.listen()
+
+//note  install nodemon on the system it helps automatically referesh the server.
+
+//note short cammand start server
+1.go to package.json folder
+2. go to scripts 
+"start: "node src/app.s"    -> npm run start
+"dev : "nodemon src/app.js" -> npm run dev
