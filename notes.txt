@@ -8,7 +8,8 @@
   npm i express
 7.create a web server
     1.require express module
-    2.creating new web server using express
+    const express = require("express");
+    2.connecting new web server using express
     const app = express();
     3.app listen incoming request on port number  7777 is port number
     app.listen(7777,()=>{
@@ -34,3 +35,72 @@
 2. go to scripts 
 "start: "node src/app.s"    -> npm run start
 "dev : "nodemon src/app.js" -> npm run dev
+
+
+-------------------Routing and request handlesr--------------------
+1.git intilize and push code on github server.
+2.http methods -> GET,POST,DELETE,PUT,PATCH
+3.istall postman s/w for api call
+4.postman -> dashboard -> my workplace -> new -> http request -> select api methods
+5.handle route with all http methods -> GET,POST,DELETE,PUT AND PATCH
+    -> use()-> this method matchs all route
+6.advance routing concept
+    1.? optional
+    app.get("/ab?c",(req,res)=>{
+        res.send("send data to the server);
+    })
+
+    you calls this route 
+    http//:localhost:3000/ac and also http//:localhost:3000/abc
+    because "b" text after give ? mark.
+
+    2.+ add pattern
+     app.get("/ab+c",(req,res)=>{
+        res.send("send data to the server);
+    })
+    you calls this route 
+    http//:localhost:3000/abbc and also http//:localhost:3000/abbbbbc
+    because + sign checks match pattern start with b and ends with c 
+
+    3.* staring text and ends text match between gives any text.
+     app.get("/ab*c",(req,res)=>{
+        res.send("send data to the server);
+    })
+
+    you calls this route 
+    http//:localhost:3000/abbgdsdsdc and also http//:localhost:3000/abgjvcvccc
+    because * sign checks match pattern start with ab and ends with c and any text given between 
+
+    4.regex -> not route written inside " " 
+        1. /a/ -> if in the path a letter is there it will be worked
+        app.get(/a/, (req, res) => {
+        res.send(" send cat data to server ");
+        });
+        //localhost:3000/cat it will worked because letter c and letter d betwwen letter a is present
+        2./.*fly$/ -> start with any letter and end with fly text it works
+        //localhost:3000/butterfly it will worked because this route and with fly text
+
+    5.//localhost:3000/user?userid=100
+        how to get this user is id value ?
+        app.get("/user",(req,res)=>{
+            console.log("userId:" , req.query)
+        })
+        -> req.query ->query will give you the information of the queary parameter
+        o/p -> userId : 100
+    
+    6.how to make route dynamic
+        //localhost:3000/user/101
+        how to get user 101 value
+        app.get("/user/:userid",(req,res) => {
+            console.log("userid" , req.params)
+        })
+        -> : colon meance dynamic routing
+        ->req.params -> params will giveyou value
+        o/p=> userid 101
+
+        you can pass multiple dynamic value.
+        app.get("/user/:userid/:name/:password",(req,res) => {
+            console.log("userid ,name ,password" , req.params)
+        })
+        url => //localhost:3000/user/101/ashok/testing
+        o/p=> userid=>101 , name=>ashok ,password=>testing
