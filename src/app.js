@@ -28,3 +28,19 @@ app.get("/admin/getData", (req, res) => {
 app.delete("/admin/deleteUser", (req, res) => {
   res.send("user deleted sucessfully");
 });
+
+// error handling
+
+app.get("/getUser", (req, res) => {
+  try {
+    res.send("user data send sucessfully");
+  } catch (err) {
+    res.send("error" + err);
+  }
+});
+
+app.use("/", (err, req, res, next) => {
+  if (err) {
+    res.status(401).send("something went wrong");
+  }
+});
