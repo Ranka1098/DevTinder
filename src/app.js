@@ -75,6 +75,19 @@ app.get(/.*fly$/, (req, res) => {
   res.send("advance rounting call regex end with fly letter");
 });
 
+//5.make route dynamic using colon (:)
+// url => http:localhost:3000/user/101
+app.get("/user/:userId", (req, res) => {
+  console.log(req.params);
+});
+
+// 6.how to get userId from urlbar
+// url => htpp:localhost:3000/user?userId=100
+// query will give you the information about userId parameter
+app.get("/user", (req, res) => {
+  console.log(req.query);
+});
+
 // how  do you handle the incoming call using the route handler
 app.use("/", (req, res) => {
   res.send("hello from the server");
