@@ -6,14 +6,7 @@ const mongoose = require("mongoose");
 
 const connectDB = async () => {
   await mongoose.connect(
-    "mongodb+srv://ashokranka30:E_Bjh3jTSFSh5bk@cluster0.zv0qp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+    "mongodb+srv://ashokranka30:E_Bjh3jTSFSh5bk@cluster0.zv0qp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/devtinder"
   );
 };
-
-connectDB()
-  .then(() => {
-    console.log("connect to database sucessfully ");
-  })
-  .catch((err) => {
-    console.log("not connect to database", err);
-  });
+module.exports = connectDB;
