@@ -32,6 +32,17 @@ app.get("/feed", async (req, res) => {
   }
 });
 
+// get all user from database
+app.get("/alluser", async (req, res) => {
+  try {
+    const allUser = await User.find({});
+    // emprty object returns all user
+    res.send(allUser);
+  } catch (err) {
+    res.status(400).send("user not found" + err.message);
+  }
+});
+
 connectDB()
   .then(() => {
     console.log("connect to database sucessfully ");
