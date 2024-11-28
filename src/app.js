@@ -3,17 +3,21 @@ const connectDB = require("./config/databse");
 const User = require("./model/user");
 
 const app = express();
+// app.use() method activate all middleware
+// app.use(()=>{})
+
+// all incoming json data request from body convert into js object
+app.use(express.json());
 
 app.post("/signup", async (req, res) => {
-  const user = new User({
-    firstName: "Ashok",
-    lastName: "Ranka",
-    emailId: "ashok@gmail.com",
-    password: "Ashok@123",
-  });
-
-  await user.save();
-  res.send("user added successfully");
+  console.log(req.body);
+  const user = new User(req.body);
+  try {
+    await user.save();
+    res.send("user added successfully!");
+  } catch (err) {
+    res.status(400).send("error saving user" + err.message);
+  }
 });
 
 connectDB()
