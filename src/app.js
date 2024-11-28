@@ -20,6 +20,18 @@ app.post("/signup", async (req, res) => {
   }
 });
 
+// feed Api - GET/feed -find user using emailID from the datbase database
+app.get("/feed", async (req, res) => {
+  try {
+    // const userEmail = req.body.emailId;
+
+    const user = await User.find({ emailId: req.body.emailId });
+    res.send(user);
+  } catch (err) {
+    res.status(400).send("user not found in database" + err);
+  }
+});
+
 connectDB()
   .then(() => {
     console.log("connect to database sucessfully ");
