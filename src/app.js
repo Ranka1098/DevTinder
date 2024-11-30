@@ -25,6 +25,9 @@ app.get("/feed", async (req, res) => {
     // const userEmail = req.body.emailId;
 
     const user = await User.find({ emailId: req.body.emailId });
+    if (user.length === 0) {
+      res.status(404).send("user not found");
+    }
     res.send(user);
   } catch (err) {
     res.status(400).send("user not found in database" + err);
@@ -39,6 +42,17 @@ app.get("/alluser", async (req, res) => {
     res.send(allUser);
   } catch (err) {
     res.status(400).send("user not found" + err.message);
+  }
+});
+
+// delete user from database
+app.delete("/userDelete", async (req, res) => {
+  const userId = req.body.userId;
+  try {
+    const user = await User.findByIdAndDelete({ _id: userId });
+    res.send("user deleted" + user);
+  } catch (err) {
+    res.status(400).send("user delete" + err.message);
   }
 });
 
