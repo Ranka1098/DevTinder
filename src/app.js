@@ -1,21 +1,32 @@
 const express = require("express");
 const connectDB = require("./config/databse");
 const User = require("./model/user");
+const validateSignUpData = require("./utils/validation");
 
 const app = express();
 // app.use() method activate all middleware
 // app.use(()=>{})
 
-// all incoming json data request from body convert into js object
+// all incoming json data request from body to convert into js object
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
   const user = new User(req.body);
+
   try {
+    validateSignUpData(req);
+
+    // Check if the email already exists in the database
+    const existingUser = await User.findOne({ emailId: req.body.emailId });
+    if (existingUser) {
+      throw new Error("Email already exists");
+    }
+
+    // Save the new user
     await user.save();
-    res.send("user added successfully!");
+    res.send("User added successfully!");
   } catch (err) {
-    res.status(400).send("error saving user" + err.message);
+    res.status(400).send("Error saving user: " + err.message);
   }
 });
 
@@ -53,6 +64,18 @@ app.delete("/userDelete", async (req, res) => {
     res.send("user deleted" + user);
   } catch (err) {
     res.status(400).send("user delete" + err.message);
+  }
+});
+
+// update user from database
+app.patch("/userUpdate", async (req, res) => {
+  const userId = req.body.userId;
+  const data = req.body;
+  try {
+    await User.findByIdAndUpdate({ _id: userId }, data);
+    res.send("user update data sucessfully");
+  } catch (err) {
+    res.status(400).send("user not updated" + err.message);
   }
 });
 
