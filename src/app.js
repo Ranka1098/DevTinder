@@ -19,6 +19,7 @@ app.post("/signup", async (req, res) => {
     const { firstName, lastName, emailId, password } = req.body;
     // bcrypt return a promise
     const passwordHash = await bcrypt.hash(password, 10);
+
     console.log("encrypted password is" + passwordHash);
 
     // Check if the email already exists in the database
@@ -107,6 +108,27 @@ app.patch("/userUpdate", async (req, res) => {
       return res.status(404).send("User not found.");
     }
     res.send("User data updated successfully.");
+  } catch (err) {
+    res.status(400).send("User not updated: " + err.message);
+  }
+});
+
+// login api
+app.post("/loginUser", async (req, res) => {
+  try {
+    const { emailId, password } = req.body;
+    const user = await User.findOne({ emailId: emailId });
+
+    if (!user) {
+      return res.status(400).send("Login failed: Email not registered.");
+    }
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
+
+    if (isPasswordMatch) {
+      res.send("Login successful");
+    } else {
+      return res.status(400).send("Login failed: Incorrect password.");
+    }
   } catch (err) {
     res.status(400).send("User not updated: " + err.message);
   }
