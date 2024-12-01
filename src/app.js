@@ -2,6 +2,7 @@ const express = require("express");
 const connectDB = require("./config/databse");
 const User = require("./model/user");
 const validateSignUpData = require("./utils/validation");
+const bcrypt = require("bcrypt");
 
 const app = express();
 // app.use() method activate all middleware
@@ -11,16 +12,28 @@ const app = express();
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
-  const user = new User(req.body);
-
   try {
     validateSignUpData(req);
+
+    // encrypt the password
+    const { firstName, lastName, emailId, password } = req.body;
+    // bcrypt return a promise
+    const passwordHash = await bcrypt.hash(password, 10);
+    console.log("encrypted password is" + passwordHash);
 
     // Check if the email already exists in the database
     const existingUser = await User.findOne({ emailId: req.body.emailId });
     if (existingUser) {
       throw new Error("Email already exists");
     }
+
+    // creating new user instance
+    const user = new User({
+      firstName,
+      lastName,
+      emailId,
+      password: passwordHash,
+    });
 
     // Save the new user
     await user.save();
