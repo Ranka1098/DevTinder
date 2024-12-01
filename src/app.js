@@ -31,7 +31,7 @@ app.post("/signup", async (req, res) => {
 });
 
 // feed Api - GET/feed -find user using emailID from the datbase database
-app.get("/feed", async (req, res) => {
+app.get("/findUser", async (req, res) => {
   try {
     // const userEmail = req.body.emailId;
 
@@ -69,13 +69,33 @@ app.delete("/userDelete", async (req, res) => {
 
 // update user from database
 app.patch("/userUpdate", async (req, res) => {
-  const userId = req.body.userId;
-  const data = req.body;
+  const { userId, ...updateData } = req.body;
+
   try {
-    await User.findByIdAndUpdate({ _id: userId }, data);
-    res.send("user update data sucessfully");
+    const ALLOWED_UPDATE = ["photoUrl", "about", "gender", "skill"];
+
+    const isUpdateAllowed = Object.keys(updateData).every((k) =>
+      ALLOWED_UPDATE.includes(k)
+    );
+
+    if (!isUpdateAllowed) {
+      return res.status(400).send("Update not allowed for these fields.");
+    }
+
+    const updateUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        $set: updateData,
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!updateUser) {
+      return res.status(404).send("User not found.");
+    }
+    res.send("User data updated successfully.");
   } catch (err) {
-    res.status(400).send("user not updated" + err.message);
+    res.status(400).send("User not updated: " + err.message);
   }
 });
 
