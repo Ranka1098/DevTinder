@@ -3,8 +3,22 @@ const connectDB = require("./config/databse");
 const User = require("./model/user");
 const validateSignUpData = require("./utils/validation");
 const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
 
+// Jab aap express() ko call karte hain, toh yeh ek Express application instance return karta hai.
+// Is application instance ka use karke aap routes, middleware, server configuration, aur response handling setup karte hain.
 const app = express();
+
+// app ka Role: app ek central object hai jo:
+
+// HTTP requests ko handle karta hai.
+// Routes define karta hai (e.g., GET, POST requests ke liye).
+// Middleware ko integrate karta hai (e.g., body-parser, cookie-parser).
+// Server ko configure karta hai aur listen karata hai.
+
+// Middleware to parse cookies
+app.use(cookieParser());
+
 // app.use() method activate all middleware
 // app.use(()=>{})
 
@@ -125,12 +139,30 @@ app.post("/loginUser", async (req, res) => {
     const isPasswordMatch = await bcrypt.compare(password, user.password);
 
     if (isPasswordMatch) {
+      // create JWT token
+
+      // then token wrap inside cookie and send back to user
+      const cookies = res.cookie("token", "ruhwruhvnngrurivnkvsdpiwfwe8");
+      console.log(cookies);
       res.send("Login successful");
     } else {
       return res.status(400).send("Login failed: Incorrect password.");
     }
   } catch (err) {
     res.status(400).send("User not updated: " + err.message);
+  }
+});
+
+// user profile api call
+app.get("/userProfile", async (req, res) => {
+  const cookies = req.cookies; // Access cookies from the request
+  console.log(cookies);
+
+  const { token } = cookies;
+  if (token) {
+    res.send("token is valid");
+  } else {
+    res.send("plss login");
   }
 });
 
