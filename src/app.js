@@ -158,14 +158,26 @@ app.post("/loginUser", async (req, res) => {
 
 // user profile api call
 app.get("/userProfile", async (req, res) => {
-  const cookies = req.cookies; // Access cookies from the request
-  console.log(cookies);
+  // read the cookie
+  const cookies = req.cookies;
 
+  // extract token from cookie
   const { token } = cookies;
-  if (token) {
-    res.send("token is valid");
+
+  // validate token
+  const istokenValid = await jwt.verify(token, "DevTinder$123");
+
+  //  jwt.verify method return user id
+  const { _id } = istokenValid;
+
+  // get user from this id
+  const user = await User.findById({ _id });
+
+  // validate this user
+  if (user) {
+    res.send(user);
   } else {
-    res.send("plss login");
+    res.send("user not found");
   }
 });
 
