@@ -4,6 +4,7 @@ const User = require("./model/user");
 const validateSignUpData = require("./utils/validation");
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 
 // Jab aap express() ko call karte hain, toh yeh ek Express application instance return karta hai.
 // Is application instance ka use karke aap routes, middleware, server configuration, aur response handling setup karte hain.
@@ -140,10 +141,12 @@ app.post("/loginUser", async (req, res) => {
 
     if (isPasswordMatch) {
       // create JWT token
+      const token = await jwt.sign({ _id: user._id }, "DevTinder$123");
+
+      console.log("jwt token : ", token);
 
       // then token wrap inside cookie and send back to user
-      const cookies = res.cookie("token", "ruhwruhvnngrurivnkvsdpiwfwe8");
-      console.log(cookies);
+      const cookies = res.cookie("token", token);
       res.send("Login successful");
     } else {
       return res.status(400).send("Login failed: Incorrect password.");
