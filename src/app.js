@@ -139,13 +139,11 @@ app.post("/loginUser", async (req, res) => {
     if (!user) {
       return res.status(400).send("Login failed: Email not registered.");
     }
-    const isPasswordMatch = await bcrypt.compare(password, user.password);
-
+    const isPasswordMatch = await user.validatePassword(password);
+    // user has sent in validate function password
     if (isPasswordMatch) {
       // create JWT token
-      const token = await jwt.sign({ _id: user._id }, "DevTinder$123", {
-        expiresIn: "1d",
-      });
+      const token = await user.getJWT();
 
       console.log("jwt token : ", token);
 
