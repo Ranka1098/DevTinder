@@ -5,6 +5,8 @@ const validateSignUpData = require("./utils/validation");
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
+const userAuth = require("./middleware/userAuth");
+const uniqueEmail = require("./middleware/UniqueEmail");
 
 // Jab aap express() ko call karte hain, toh yeh ek Express application instance return karta hai.
 // Is application instance ka use karke aap routes, middleware, server configuration, aur response handling setup karte hain.
@@ -26,7 +28,7 @@ app.use(cookieParser());
 // all incoming json data request from body to convert into js object
 app.use(express.json());
 
-app.post("/signup", async (req, res) => {
+app.post("/signup", uniqueEmail, async (req, res) => {
   try {
     validateSignUpData(req);
 
@@ -38,10 +40,10 @@ app.post("/signup", async (req, res) => {
     console.log("encrypted password is" + passwordHash);
 
     // Check if the email already exists in the database
-    const existingUser = await User.findOne({ emailId: req.body.emailId });
-    if (existingUser) {
-      throw new Error("Email already exists");
-    }
+    // const existingUser = await User.findOne({ emailId: req.body.emailId });
+    // if (existingUser) {
+    //   throw new Error("Email already exists");
+    // }
 
     // creating new user instance
     const user = new User({
@@ -157,28 +159,17 @@ app.post("/loginUser", async (req, res) => {
 });
 
 // user profile api call
-app.get("/userProfile", async (req, res) => {
-  // read the cookie
-  const cookies = req.cookies;
+app.get("/userProfile", userAuth, async (req, res) => {
+  const user = req.user;
+  res.send(user);
+});
 
-  // extract token from cookie
-  const { token } = cookies;
-
-  // validate token
-  const istokenValid = await jwt.verify(token, "DevTinder$123");
-
-  //  jwt.verify method return user id
-  const { _id } = istokenValid;
-
-  // get user from this id
-  const user = await User.findById({ _id });
-
-  // validate this user
-  if (user) {
-    res.send(user);
-  } else {
-    res.send("user not found");
-  }
+// sending connection request
+app.get("/sendingconnection", userAuth, async (req, res) => {
+  const user = req.user;
+  console.log("connection of this user", user.firstName);
+  console.log("connection establised");
+  res.send("connection establised");
 });
 
 connectDB()
