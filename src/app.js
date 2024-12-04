@@ -143,12 +143,17 @@ app.post("/loginUser", async (req, res) => {
 
     if (isPasswordMatch) {
       // create JWT token
-      const token = await jwt.sign({ _id: user._id }, "DevTinder$123");
+      const token = await jwt.sign({ _id: user._id }, "DevTinder$123", {
+        expiresIn: "1d",
+      });
 
       console.log("jwt token : ", token);
 
       // then token wrap inside cookie and send back to user
-      const cookies = res.cookie("token", token);
+      const cookies = res.cookie("token", token, {
+        httpOnly: true,
+        secure: false,
+      });
       res.send("Login successful");
     } else {
       return res.status(400).send("Login failed: Incorrect password.");
